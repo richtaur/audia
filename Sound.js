@@ -1,7 +1,8 @@
+// TODO: [BUG] music looping is a little bit off. I blame BUFFER and w/e the fuck is going on with that
+// TODO: volume (0 -> 1)
 // TODO: pan/panning (-1 -> 1)
 // TODO: polyphony?
-// TODO: volume (0 -> 1)
-// TODO: music looping is a little bit off. I blame BUFFER and w/e the fuck is going on with that
+// TODO: fade?
 
 var Sound = (function () {
 	if (typeof AudioContext == "function") {
@@ -26,7 +27,6 @@ var Sound = (function () {
 		if (typeof arg == "string") {
 			this.src = arg;
 		} else if (typeof arg == "object") {
-			console.log("object wanted");
 			for (var key in arg) {
 				this[key] = arg[key];
 			}
