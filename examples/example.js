@@ -1,6 +1,23 @@
+// Attack sound
+var attackSound = new Sound("audio/demoblin_attacks.mp3");
+
+// Play
+var playAttack = document.getElementById("play-attack");
+playAttack.addEventListener("click", function () {
+	attackSound.play();
+}, false);
+
+// Loop
+var loopAttack = document.getElementById("loop-attack");
+loopAttack.addEventListener("click", function () {
+	attackSound.loop = loopAttack.checked;
+}, false);
+
 // Shop music
-var shopMusic = new Sound();
-shopMusic.src = "audio/shop.mp3";
+var shopMusic = new Sound({
+	src: "audio/shop.mp3",
+	loop: true
+});
 
 // Play
 var playShop = document.getElementById("play-shop");
@@ -28,19 +45,3 @@ var currentTimeInterval = setInterval(function () {
 document.getElementById("set-current-time-shop").addEventListener("click", function () {
 	shopMusic.currentTime = Number(document.getElementById("current-time-value-shop").value);
 });
-
-// Attack sound
-var attackSound = new Sound();
-attackSound.src = "audio/demoblin_attacks.mp3";
-
-// Play
-var playAttack = document.getElementById("play-attack");
-playAttack.addEventListener("click", function () {
-	attackSound.play();
-}, false);
-
-// Loop
-var loopAttack = document.getElementById("loop-attack");
-loopAttack.addEventListener("click", function () {
-	attackSound.loop = loopAttack.checked;
-}, false);
