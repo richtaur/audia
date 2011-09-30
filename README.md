@@ -11,5 +11,5 @@ Read the full write-up on this project on the [Lost Decade Games blog][2].
 The API is very straight-forward and can be found [right here on GitHub][3].
 
 [1]: https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html
-[2]: 
-[3]: 
+[2]: http://www.lostdecadegames.com/TODO
+[3]: http://www.lostdecadegames.com/TODO

@@ -36,15 +36,11 @@ attackSound.src = "audio/demoblin_attacks.mp3";
 // Play
 var playAttack = document.getElementById("play-attack");
 playAttack.addEventListener("click", function () {
-	console.log('play ...');
-	//attackSound.rewind();
 	attackSound.play();
 }, false);
 
-/*
-// Loop?
+// Loop
 var loopAttack = document.getElementById("loop-attack");
 loopAttack.addEventListener("click", function () {
 	attackSound.loop = loopAttack.checked;
 }, false);
-*/

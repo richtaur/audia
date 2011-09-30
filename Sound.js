@@ -3,7 +3,7 @@
 	"Properties": {
 		"currentTime": {"type": Number, "description": ""},
 		"duration": {"type": Number, "readOnly": true, "description": "Returns the length of the current sound buffer (in seconds)."},
-		//"loop": {"type": Boolean, "description": ""},
+		"loop": {"type": Boolean, "description": "If set to true, the audio will play again when it reaches the end of playback."},
 		//"pan": {"type": Number, "default": 0},
 		"playing": {"type": Boolean, "readOnly": true, "description": "True if the sound is playing, otherwise false."},
 		"src": {"type": String},
@@ -15,11 +15,20 @@
 		"stop": "Stops playback of the sound and sets currentTime to 0."
 	}
 };
+
+var sound = new Sound("/path/to/file.extension");
+var sound = new Sound({
+	src: "/path/to/file.extension",
+	currentTime: 10,
+	onload: function () {
+		console.log("loaded!");
+	}
+});
+
 */
 
-// onended?
-// polyphony?
-// TODO: sounds are still "playing" even after they've ended ... setInterval? have a _refreshStatus method? hrm ...
+// TODO: pan/panning
+// TODO: polyphony?
 
 var Sound = (function () {
 	if (typeof AudioContext == "function") {
@@ -35,6 +44,7 @@ var Sound = (function () {
 	var Sound = function () {
 		this._currentTime = 0;
 		this._duration = 0;
+		this._onendedTimeout = null;
 		this._playing = false;
 		this._source = null;
 		this._startTime = null;
@@ -75,13 +85,6 @@ var Sound = (function () {
 		return this._duration;
 	});
 
-	/*
-	// TODO
-	Sound.prototype.__defineSetter__("loop", function (loop) {
-		this._source.loop = loop;
-	});
-	*/
-
 	Sound.prototype.__defineGetter__("playing", function () {
 		return this._playing;
 	});
@@ -93,7 +96,6 @@ var Sound = (function () {
 	Sound.prototype.__defineSetter__("src", function (url) {
 		this._src = url;
 		var sound = this;
-		var onload = this.onload;
 
 		var source = audioContext.createBufferSource();
 		source.connect(audioContext.destination);
@@ -114,10 +116,13 @@ var Sound = (function () {
 			buffers[url] = buffer;
 			sound._duration = buffer.duration;
 
-			onload && onload();
+			sound.onload();
 		};
 		xhr.send();
 	});
+
+	Sound.prototype.onended = function () {};
+	Sound.prototype.onload = function () {};
 
 	Sound.prototype.play = function () {
 		if (this._playing) {
@@ -126,10 +131,21 @@ var Sound = (function () {
 
 		this._regenerateBuffer();
 
-		var grainDuration = (this._duration - this._currentTime - 0.1);
+		var BUFFER = 0.01; // TODO: gross? hopefully a better way can be found
+		var grainDuration = (this._duration - this._currentTime - BUFFER);
 		this._source.noteGrainOn(0, this._currentTime, grainDuration);
 		this._playing = true;
 		this._startTime = audioContext.currentTime;
+
+		var sound = this;
+		this._onendedTimeout = setTimeout(function () {
+			sound.onended();
+			sound._stop();
+			sound.currentTime = 0;
+			if (sound.loop) {
+				sound.play();
+			}
+		}, grainDuration * 1000);
 	};
 
 	Sound.prototype.pause = function () {
@@ -139,6 +155,11 @@ var Sound = (function () {
 	Sound.prototype._stop = function () {
 		if (!this._playing) {
 			return;
+		}
+
+		if (this._onendedTimeout) {
+			clearTimeout(this._onendedTimeout);
+			this._onendedTimeout = null;
 		}
 
 		this._source.noteOff();
