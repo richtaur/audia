@@ -1,5 +1,4 @@
 // TODO: [BUG] music looping is a little bit off. I blame BUFFER and w/e the fuck is going on with that
-// TODO: volume (0 -> 1)
 // TODO: pan/panning (-1 -> 1)
 // TODO: polyphony?
 // TODO: fade?
@@ -13,15 +12,27 @@ var Sound = (function () {
 		throw "No AudioContext object found.";
 	}
 
+	// Helper
+	var clamp = function (value, min, max) {
+		if (value < min) {
+			return min;
+		} else if (value > max) {
+			return max;
+		}
+		return value;
+	};
+
 	var buffers = {};
 
 	var Sound = function () {
 		this._currentTime = 0;
 		this._duration = 0;
+		this._gain = null;
 		this._onendedTimeout = null;
 		this._playing = false;
 		this._source = null;
 		this._startTime = null;
+		this._volume = 1;
 
 		var arg = arguments[0];
 		if (typeof arg == "string") {
@@ -47,12 +58,7 @@ var Sound = (function () {
 	});
 
 	Sound.prototype.__defineSetter__("currentTime", function (currentTime) {
-		if (currentTime < 0) {
-			currentTime = 0;
-		}
-		if (currentTime > this._duration) {
-			currentTime = this._duration;
-		}
+		var currentTime = clamp(currentTime, 0, this._duration);
 
 		if (this.currentTime != currentTime) {
 			var playing = this._playing;
@@ -80,9 +86,18 @@ var Sound = (function () {
 		this._src = url;
 		var sound = this;
 
+		// Create the gain node and set the volume
+		var gain = audioContext.createGainNode();
+		gain.connect(audioContext.destination);
+		gain.gain.value = this._volume;
+
+		// Create the buffer source and connect to the gain
 		var source = audioContext.createBufferSource();
-		source.connect(audioContext.destination);
+		source.connect(gain);
+
+		// Retain!
 		this._source = source;
+		this._gain = gain;
 
 		if (url in buffers) {
 			source.buffer = buffers[url];
@@ -102,6 +117,18 @@ var Sound = (function () {
 			sound.onload();
 		};
 		xhr.send();
+	});
+
+	Sound.prototype.__defineGetter__("volume", function () {
+		return this._volume;
+	});
+
+	Sound.prototype.__defineSetter__("volume", function (volume) {
+		// Max volume of 10 is arbitrary
+		var volume = clamp(volume, 0, 10);
+
+		this._volume = volume;
+		this._gain.gain.value = volume;
 	});
 
 	Sound.prototype.onended = function () {};
@@ -135,6 +162,13 @@ var Sound = (function () {
 		this._stop();
 	};
 
+	Sound.prototype.stop = function () {
+		this._stop();
+		this._currentTime = 0;
+	};
+
+	// "Private" methods
+
 	Sound.prototype._stop = function () {
 		if (!this._playing) {
 			return;
@@ -145,21 +179,17 @@ var Sound = (function () {
 			this._onendedTimeout = null;
 		}
 
-		this._source.noteOff();
+		this._source.noteOff(0);
 		this._expireBuffer();
 
 		this._currentTime += (audioContext.currentTime - this._startTime);
 		this._playing = false;
 	};
 
-	Sound.prototype.stop = function () {
-		this._stop();
-		this._currentTime = 0;
-	};
-
 	Sound.prototype._expireBuffer = function () {
 		this._source = null;
 	};
+
 	Sound.prototype._regenerateBuffer = function () {
 		this.src = this._src;
 	};

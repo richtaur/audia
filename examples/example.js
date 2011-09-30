@@ -45,3 +45,9 @@ var currentTimeInterval = setInterval(function () {
 document.getElementById("set-current-time-shop").addEventListener("click", function () {
 	shopMusic.currentTime = Number(document.getElementById("current-time-value-shop").value);
 });
+
+// Volume
+var volumeShop = document.getElementById("volume-shop");
+document.getElementById("set-volume-shop").addEventListener("click", function () {
+	shopMusic.volume = Number(document.getElementById("volume-shop").value);
+});
