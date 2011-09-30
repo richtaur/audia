@@ -1,34 +1,6 @@
-/*
-{
-	"Properties": {
-		"currentTime": {"type": Number, "description": ""},
-		"duration": {"type": Number, "readOnly": true, "description": "Returns the length of the current sound buffer (in seconds)."},
-		"loop": {"type": Boolean, "description": "If set to true, the audio will play again when it reaches the end of playback."},
-		//"pan": {"type": Number, "default": 0},
-		"playing": {"type": Boolean, "readOnly": true, "description": "True if the sound is playing, otherwise false."},
-		"src": {"type": String},
-		"onload": {"type": Function, "description": "Called on sound file loaded (after setting src)."}
-	},
-	"Methods": {
-		"play": "Starts playback of the sound.",
-		"pause": "Stops playback of the sound.",
-		"stop": "Stops playback of the sound and sets currentTime to 0."
-	}
-};
-
-var sound = new Sound("/path/to/file.extension");
-var sound = new Sound({
-	src: "/path/to/file.extension",
-	currentTime: 10,
-	onload: function () {
-		console.log("loaded!");
-	}
-});
-
-*/
-
-// TODO: pan/panning
+// TODO: pan/panning (-1 -> 1)
 // TODO: polyphony?
+// TODO: volume (0 -> 1)
 
 var Sound = (function () {
 	if (typeof AudioContext == "function") {
