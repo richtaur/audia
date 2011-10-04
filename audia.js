@@ -1,15 +1,16 @@
 // TODO: [BUG] music looping is a little bit off. I blame BUFFER and w/e the fuck is going on with that
 // TODO: pan/panning (-1 -> 1)
-// TODO: polyphony?
-// TODO: fade?
+// TODO: fade methods?
 
-var Sound = (function () {
+var Audia = (function () {
+	var supported = true;
+
 	if (typeof AudioContext == "function") {
 		var audioContext = new AudioContext();
 	} else if (typeof webkitAudioContext == "function") {
 		var audioContext = new webkitAudioContext();
 	} else {
-		throw "No AudioContext object found.";
+		supported = false;
 	}
 
 	// Helper
@@ -24,7 +25,7 @@ var Sound = (function () {
 
 	var buffers = {};
 
-	var Sound = function () {
+	var Audia = function () {
 		this._currentTime = 0;
 		this._duration = 0;
 		this._gain = null;
@@ -44,7 +45,19 @@ var Sound = (function () {
 		}
 	};
 
-	Sound.prototype.__defineGetter__("currentTime", function () {
+	Audia.__defineGetter__("version", function () {
+		return 0.1;
+	});
+
+	Audia.__defineGetter__("supported", function () {
+		return supported;
+	});
+
+	if (!supported) {
+		return Audia;
+	}
+
+	Audia.prototype.__defineGetter__("currentTime", function () {
 		if (this._playing) {
 			var time = (audioContext.currentTime - this._startTime) + this._currentTime;
 			if (time > this._duration) {
@@ -57,7 +70,7 @@ var Sound = (function () {
 		}
 	});
 
-	Sound.prototype.__defineSetter__("currentTime", function (currentTime) {
+	Audia.prototype.__defineSetter__("currentTime", function (currentTime) {
 		var currentTime = clamp(currentTime, 0, this._duration);
 
 		if (this.currentTime != currentTime) {
@@ -70,19 +83,19 @@ var Sound = (function () {
 		}
 	});
 
-	Sound.prototype.__defineGetter__("duration", function () {
+	Audia.prototype.__defineGetter__("duration", function () {
 		return this._duration;
 	});
 
-	Sound.prototype.__defineGetter__("playing", function () {
+	Audia.prototype.__defineGetter__("playing", function () {
 		return this._playing;
 	});
 
-	Sound.prototype.__defineGetter__("src", function () {
+	Audia.prototype.__defineGetter__("src", function () {
 		return this._src;
 	});
 
-	Sound.prototype.__defineSetter__("src", function (url) {
+	Audia.prototype.__defineSetter__("src", function (url) {
 		this._src = url;
 		var sound = this;
 
@@ -91,13 +104,22 @@ var Sound = (function () {
 		gain.connect(audioContext.destination);
 		gain.gain.value = this._volume;
 
+		/*
+		// Create the panner node and set the panning
+		var panner = audioContext.createPanner();
+		panner.connect(gain);
+		panner.setPosition(0, 0, 0);
+		panner.refDistance = 0;
+		*/
+
 		// Create the buffer source and connect to the gain
 		var source = audioContext.createBufferSource();
+		//source.connect(panner);
 		source.connect(gain);
 
 		// Retain!
-		this._source = source;
 		this._gain = gain;
+		this._source = source;
 
 		if (url in buffers) {
 			source.buffer = buffers[url];
@@ -119,11 +141,11 @@ var Sound = (function () {
 		xhr.send();
 	});
 
-	Sound.prototype.__defineGetter__("volume", function () {
+	Audia.prototype.__defineGetter__("volume", function () {
 		return this._volume;
 	});
 
-	Sound.prototype.__defineSetter__("volume", function (volume) {
+	Audia.prototype.__defineSetter__("volume", function (volume) {
 		// Max volume of 10 is arbitrary
 		var volume = clamp(volume, 0, 10);
 
@@ -131,10 +153,10 @@ var Sound = (function () {
 		this._gain.gain.value = volume;
 	});
 
-	Sound.prototype.onended = function () {};
-	Sound.prototype.onload = function () {};
+	Audia.prototype.onended = function () {};
+	Audia.prototype.onload = function () {};
 
-	Sound.prototype.play = function () {
+	Audia.prototype.play = function () {
 		if (this._playing) {
 			return;
 		}
@@ -158,18 +180,18 @@ var Sound = (function () {
 		}, grainDuration * 1000);
 	};
 
-	Sound.prototype.pause = function () {
+	Audia.prototype.pause = function () {
 		this._stop();
 	};
 
-	Sound.prototype.stop = function () {
+	Audia.prototype.stop = function () {
 		this._stop();
 		this._currentTime = 0;
 	};
 
 	// "Private" methods
 
-	Sound.prototype._stop = function () {
+	Audia.prototype._stop = function () {
 		if (!this._playing) {
 			return;
 		}
@@ -186,13 +208,13 @@ var Sound = (function () {
 		this._playing = false;
 	};
 
-	Sound.prototype._expireBuffer = function () {
+	Audia.prototype._expireBuffer = function () {
 		this._source = null;
 	};
 
-	Sound.prototype._regenerateBuffer = function () {
+	Audia.prototype._regenerateBuffer = function () {
 		this.src = this._src;
 	};
 
-	return Sound;
+	return Audia;
 }());

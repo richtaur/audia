@@ -1,5 +1,13 @@
+(function () {
+
+// Supported? If not, get Chrome, son!
+if (!Audia.supported) {
+	document.body.innerHTML = "Sorry, your browser doesn't support AudioContext.";
+	return;
+}
+
 // Attack sound
-var attackSound = new Sound("audio/demoblin_attacks.mp3");
+var attackSound = new Audia("audio/demoblin_attacks.mp3");
 
 // Play
 var playAttack = document.getElementById("play-attack");
@@ -14,7 +22,7 @@ loopAttack.addEventListener("click", function () {
 }, false);
 
 // Shop music
-var shopMusic = new Sound({
+var shopMusic = new Audia({
 	src: "audio/shop.mp3",
 	loop: true
 });
@@ -51,3 +59,5 @@ var volumeShop = document.getElementById("volume-shop");
 document.getElementById("set-volume-shop").addEventListener("click", function () {
 	shopMusic.volume = Number(document.getElementById("volume-shop").value);
 });
+
+}());
