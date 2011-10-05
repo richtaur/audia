@@ -6,10 +6,14 @@ An HTML5 library for simplifying sound playback via the [Web Audio API][1]. A co
 
 ### Global audia object
 
+Example: `var canPlay = Audia.supported;`
+
 * **supported**: `Boolean` True if the library is supported by the browser, otherwise false. (Read only)
 * **version**: `Number` The version of Audia being run. (Current: `0.1`)
 
 ### Audia instances
+
+Example: `var sound = new Audia();`
 
 #### Properties
 
@@ -47,7 +51,7 @@ var battleMusic = new Audia({
 });
 ```
 
-### Move a sound object to 30 seconds into the buffer
+### Move the playback pointer to 30 seconds into the sound buffer
 
 ```javascript
 sound.currentTime = 30;
@@ -59,7 +63,7 @@ sound.currentTime = 30;
 var percentage = (sound.currentTime / sound.duration) * 100;
 ```
 
-### Stop if it if's playing
+### Stop it if it's playing
 
 ```javascript
 if (sound.playing) {
