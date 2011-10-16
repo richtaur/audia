@@ -1,6 +1,7 @@
 // TODO: [BUG] music looping is a little bit off. I blame BUFFER and w/e the fuck is going on with that
 // TODO: pan/panning (-1 -> 1)
 // TODO: fade methods?
+// TODO: implement proper looping
 
 var Audia = (function () {
 	var supported = true;
@@ -14,6 +15,7 @@ var Audia = (function () {
 	}
 
 	// Helper
+	// TODO: better clamp method
 	var clamp = function (value, min, max) {
 		if (value < min) {
 			return min;
