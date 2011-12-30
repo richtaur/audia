@@ -242,12 +242,18 @@ var Audia = (function () {
 
 	Audia.prototype.mute = function () {
 		this._muted = true;
-		this._gain.gain.value = 0;
+
+		if (this._gain) {
+			this._gain.gain.value = 0;
+		}
 	};
 
 	Audia.prototype.unmute = function () {
 		this._muted = false;
-		this._gain.gain.value = this._volume;
+
+		if (this._gain) {
+			this._gain.gain.value = this._volume;
+		}
 	};
 
 	Audia.prototype._regenerateBuffer = function () {
