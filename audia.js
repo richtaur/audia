@@ -110,6 +110,13 @@ var Audia = (function () {
 	Audia.prototype.__defineGetter__("muted", function () {
 		return this._muted;
 	});
+	Audia.prototype.__defineSetter__("muted", function (muted) {
+		if (muted) {
+			this.mute();
+		} else {
+			this.unmute();
+		}
+	});
 
 	Audia.prototype.__defineGetter__("playing", function () {
 		return this._playing;
@@ -126,7 +133,7 @@ var Audia = (function () {
 		// Create the gain node and set the volume
 		var gain = audioContext.createGainNode();
 		gain.connect(audioContext.destination);
-		gain.gain.value = this._volume;
+		gain.gain.value = this._muted ? 0 : this._volume;
 
 		/*
 		// Create the panner node and set the panning
@@ -172,9 +179,11 @@ var Audia = (function () {
 	Audia.prototype.__defineSetter__("volume", function (volume) {
 		// Note: max volume of 10 is arbitrary
 		var volume = clamp(volume, 0, 10);
-
 		this._volume = volume;
-		this._gain.gain.value = volume;
+
+		if (!this._muted) {
+			this._gain.gain.value = volume;
+		}
 	});
 
 	Audia.prototype.onended = function () {};

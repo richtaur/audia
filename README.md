@@ -22,7 +22,7 @@ Example: `var sound = new Audia();`
 * **currentTime**: `Number` The playback point of the sound in seconds.
 * **duration**: `Number` The length of the current sound buffer in seconds. (Read only)
 * **loop**: `Boolean` If set to true, the audio will play again when it reaches the end of playback. (default: `false`)
-* **muted**: `Boolean` True if the sound has been muted, otherwise false. (Read only)
+* **muted**: `Boolean` True if the sound has been muted, otherwise false.
 * **playing**: `Boolean` True if the sound is playing, otherwise false. (Read only)
 * **src**: `String` The URL of a sound file to load.
 * **volume**: `Number` The volume of the playback where `0` is muted and `1` is normal volume. (arbitrary maximum = `10`), (default: `1`)
