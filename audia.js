@@ -158,7 +158,11 @@ var Audia = (function () {
 	Audia.prototype.onended = function () {};
 	Audia.prototype.onload = function () {};
 
-	Audia.prototype.play = function () {
+	Audia.prototype.play = function (currentTime) {
+		if (currentTime !== undefined) {
+			this.currentTime = currentTime;
+		}
+
 		if (this._playing) {
 			return;
 		}
