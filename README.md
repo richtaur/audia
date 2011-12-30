@@ -1,6 +1,8 @@
 # Audia
 
-An HTML5 library for simplifying sound playback via the [Web Audio API][1]. A complete write-up on this project can be found on the [Lost Decade Games blog][2].
+An HTML5 library for simplifying sound playback via the [Web Audio API][1].
+
+A complete write-up on this project can be found on the [Lost Decade Games blog][2].
 
 ## API Documentation
 
@@ -20,6 +22,7 @@ Example: `var sound = new Audia();`
 * **currentTime**: `Number` The playback point of the sound in seconds.
 * **duration**: `Number` The length of the current sound buffer in seconds. (Read only)
 * **loop**: `Boolean` If set to true, the audio will play again when it reaches the end of playback. (default: `false`)
+* **muted**: `Boolean` True if the sound has been muted, otherwise false. (Read only)
 * **playing**: `Boolean` True if the sound is playing, otherwise false. (Read only)
 * **src**: `String` The URL of a sound file to load.
 * **volume**: `Number` The volume of the playback where `0` is muted and `1` is normal volume. (arbitrary maximum = `10`), (default: `1`)
@@ -28,9 +31,11 @@ Example: `var sound = new Audia();`
 
 #### Methods
 
-* **play**: Begins playback of the sound buffer.
+* **play**: Begins playback of the sound buffer. Arguments: `currentTime` (optional) Sets the `currentTime` property before playing.
 * **pause**: Pauses sound playback (retaining `currentTime`).
 * **stop**: Stops sound playback (resetting `currentTime` to `0`).
+* **mute**: Silences playback of the sound buffer.
+* **unmute**: Restores audible playback of the sound buffer.
 
 ## Examples
 
@@ -81,5 +86,4 @@ sound.src = "new_song.mp3";
 ```
 
 [1]: https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html
-[2]: http://www.lostdecadegames.com/TODO
-[3]: https://github.com/lostdecade/Auracle/wiki
+[2]: http://www.lostdecadegames.com/audia-is-a-library-for-simplifying-the-web-audio-api/
