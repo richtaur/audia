@@ -60,4 +60,14 @@ document.getElementById("set-volume-shop").addEventListener("click", function ()
 	shopMusic.volume = Number(document.getElementById("volume-shop").value);
 });
 
+// Mute
+var muteShop = document.getElementById("mute-shop");
+muteShop.addEventListener("click", function () {
+	if (muteShop.checked) {
+		shopMusic.mute();
+	} else {
+		shopMusic.unmute();
+	}
+}, false);
+
 }());

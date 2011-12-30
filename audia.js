@@ -2,6 +2,7 @@
 // TODO: pan/panning (-1 -> 1)
 // TODO: fade methods?
 // TODO: implement proper looping
+// TODO: repeating via start/end points
 
 var Audia = (function () {
 	var supported = true;
@@ -15,7 +16,6 @@ var Audia = (function () {
 	}
 
 	// Helper
-	// TODO: better clamp method
 	var clamp = function (value, min, max) {
 		if (value < min) {
 			return min;
@@ -26,12 +26,16 @@ var Audia = (function () {
 	};
 
 	var buffers = {};
+	var cache = {};
+	var cacheId = 0;
 
 	var Audia = function () {
+		this._id = ++cacheId;
 		this._currentTime = 0;
 		this._duration = 0;
 		this._gain = null;
 		this._onendedTimeout = null;
+		this._muted = false;
 		this._playing = false;
 		this._source = null;
 		this._startTime = null;
@@ -45,6 +49,8 @@ var Audia = (function () {
 				this[key] = arg[key];
 			}
 		}
+
+		cache[this._id] = this;
 	};
 
 	Audia.__defineGetter__("version", function () {
@@ -58,6 +64,18 @@ var Audia = (function () {
 	if (!supported) {
 		return Audia;
 	}
+
+	Audia.muteAll = function () {
+		for (var id in cache) {
+			cache[id].mute();
+		}
+	};
+
+	Audia.unmuteAll = function () {
+		for (var id in cache) {
+			cache[id].unmute();
+		}
+	};
 
 	Audia.prototype.__defineGetter__("currentTime", function () {
 		if (this._playing) {
@@ -87,6 +105,10 @@ var Audia = (function () {
 
 	Audia.prototype.__defineGetter__("duration", function () {
 		return this._duration;
+	});
+
+	Audia.prototype.__defineGetter__("muted", function () {
+		return this._muted;
 	});
 
 	Audia.prototype.__defineGetter__("playing", function () {
@@ -148,7 +170,7 @@ var Audia = (function () {
 	});
 
 	Audia.prototype.__defineSetter__("volume", function (volume) {
-		// Max volume of 10 is arbitrary
+		// Note: max volume of 10 is arbitrary
 		var volume = clamp(volume, 0, 10);
 
 		this._volume = volume;
@@ -212,6 +234,16 @@ var Audia = (function () {
 
 	Audia.prototype._expireBuffer = function () {
 		this._source = null;
+	};
+
+	Audia.prototype.mute = function () {
+		this._muted = true;
+		this._gain.gain.value = 0;
+	};
+
+	Audia.prototype.unmute = function () {
+		this._muted = false;
+		this._gain.gain.value = this._volume;
 	};
 
 	Audia.prototype._regenerateBuffer = function () {
