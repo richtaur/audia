@@ -111,6 +111,13 @@ var Audia = (function () {
 	Audia.prototype.__defineGetter__("muted", function () {
 		return this._muted;
 	});
+	Audia.prototype.__defineSetter__("muted", function (muted) {
+		if (muted) {
+			this.mute();
+		} else {
+			this.unmute();
+		}
+	});
 
 	Audia.prototype.__defineGetter__("playing", function () {
 		return this._playing;
@@ -126,24 +133,28 @@ var Audia = (function () {
 
 		// Create the gain node and set the volume
 		var gain = audioContext.createGainNode();
-		gain.connect(audioContext.destination);
-		gain.gain.value = this._volume;
+		gain.gain.value = this._muted ? 0 : this._volume;
 
-		/*
+		// Note: panning code is commented out for now, because
+		// the mere presence of a panner is causing everything
+		// to sound muddy.
+		// http://code.google.com/p/chromium/issues/detail?id=108852
 		// Create the panner node and set the panning
-		var panner = audioContext.createPanner();
-		panner.connect(gain);
-		panner.setPosition(0, 0, 0);
-		panner.refDistance = 0;
-		*/
+		//var panner = audioContext.createPanner();
 
-		// Create the buffer source and connect to the gain
+		// Create the buffer source and connect everything
 		var source = audioContext.createBufferSource();
-		//source.connect(panner);
+		/*
+		source.connect(panner);
+		panner.connect(gain);
+		gain.connect(audioContext.destination);
+		*/
 		source.connect(gain);
+		gain.connect(audioContext.destination);
 
 		// Retain!
 		this._gain = gain;
+		//this._panner = panner;
 		this._source = source;
 
 		if (url in buffers) {
@@ -173,15 +184,21 @@ var Audia = (function () {
 	Audia.prototype.__defineSetter__("volume", function (volume) {
 		// Note: max volume of 10 is arbitrary
 		var volume = clamp(volume, 0, 10);
-
 		this._volume = volume;
-		this._gain.gain.value = volume;
+
+		if (!this._muted) {
+			this._gain.gain.value = volume;
+		}
 	});
 
 	Audia.prototype.onended = function () {};
 	Audia.prototype.onload = function () {};
 
-	Audia.prototype.play = function () {
+	Audia.prototype.play = function (currentTime) {
+		if (currentTime !== undefined) {
+			this.currentTime = currentTime;
+		}
+
 		if (this._playing) {
 			return;
 		}
