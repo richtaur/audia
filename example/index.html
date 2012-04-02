@@ -14,23 +14,27 @@
 
 		<h2>Attack sound effect</h2>
 		<p>
-			<button id="play-attack">Play</button>
+			<button disabled id="play-attack">Play</button>
 			<label>
 				<input id="loop-attack" type="checkbox"> Loop
 			</label>
 		</p>
-		<!--
 		<p>
 			<label>
-				<input id="loop-pan" min="-1" max="1" step="0.25" value="0" type="range">
-				Panning
+				Volume:
+				<input id="volume-attack" min="0" max="1" type="range" value="1" step="0.1">
 			</label>
 		</p>
-		-->
 
-		<p>
-			<a href="https://github.com/richtaur/audia/blob/master/examples/example.js#L9">View source</a>
-		</p>
+
+
+
+
+
+
+
+
+
 
 		<hr>
 
@@ -54,10 +58,6 @@
 			<label>
 				<input id="mute-shop" type="checkbox"> Mute
 			</label>
-		</p>
-
-		<p>
-			<a href="https://github.com/richtaur/audia/blob/master/examples/example.js#L24">View source</a>
 		</p>
 
 		<script src="../audia.js"></script>
