@@ -11,6 +11,9 @@
   // Play
   var playAttack = document.getElementById("play-attack");
   playAttack.addEventListener("click", function() {
+		// Passing in a number sets currentTime
+		// In this case it's a shortcut to ensuring the sound
+		// plays from the beginning
     attackSound.play(0);
   }, false);
 
@@ -25,14 +28,6 @@
   volumeAttack.addEventListener("change", function() {
     attackSound.volume = volumeAttack.value;
   }, false);
-
-
-
-
-
-
-
-
 
   // Shop music…
 
@@ -77,11 +72,7 @@
   // Mute
   var muteShop = document.getElementById("mute-shop");
   muteShop.addEventListener("click", function() {
-    if (muteShop.checked) {
-      shopMusic.mute();
-    } else {
-      shopMusic.unmute();
-    }
+		shopMusic.muted = muteShop.checked;
   }, false);
 
 //})();

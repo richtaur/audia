@@ -1,6 +1,9 @@
+// TODO: support for key/values instead of just src
+// TODO: WAI implementation
+// TODO: double check docs
 // TODO: repeating via start/end points
-// global audio?
-// global muting?
+// TODO: global volume?
+// TODO: global muting?
 
 Audia = (function () {
 
@@ -26,10 +29,10 @@ Audia = (function () {
 	if (hasWebAudio) {
 		// Web Audio API
 		var Audia = function (src) {
+			this.id = addAudiaObject(this);
+
 			if (src) {
 			}
-
-			this.id = addAudiaObject(this);
 		};
 
 		// Events…
@@ -40,42 +43,17 @@ Audia = (function () {
 	} else {
 		// Audio
 		var Audia = function (src) {
+			this.id = addAudiaObject(this);
 			this._audioNode = new Audio();
-			if (src) {
+
+			if (typeof src == "object") {
+				for (var key in src) {
+					this[key] = src[key];
+				}
+			} else if (typeof src == "string") {
 				this._audioNode.src = src;
 			}
-
-			this.id = addAudiaObject(this);
 		};
-
-		/*
-		// Events…
-
-		// None of these work in Chrome anyway, sheesh…
-
-		// oncanplay
-		Audia.prototype.__defineSetter__("oncanplay", function (onCanPlay) {
-			this._audioNode.oncanplay = onCanPlay;
-		});
-
-		// oncanplaythrough
-		Audia.prototype.__defineSetter__("oncanplaythrough", function (onCanPlayThrough) {
-			console.log(
-				this._audioNode.oncanplaythrough
-			);
-			this._audioNode.oncanplaythrough = onCanPlayThrough;
-		});
-
-		// onended
-		Audia.prototype.__defineSetter__("onended", function (onEnded) {
-			this._audioNode.onended = onEnded;
-		});
-
-		// onload
-		Audia.prototype.__defineSetter__("onload", function (onLoad) {
-			this._audioNode.onload = onLoad;
-		});
-		*/
 
 		// Methods…
 
