@@ -1,11 +1,6 @@
 # TODO
 
-* add/remove event
-* properties:
-	* onload
-	* oncanplay
-	* oncanplaythrough
-	* onended
+* add/remove event listenerrs
 * ensure props are returning correct types (eg duration NaN)
 
 * Reimplement Audio in WAI
@@ -19,6 +14,11 @@
 		- panning (2d/3d)
 		- sound sprites (?)
 * Make a more compelling example
+
+## DIFFERENCES
+
+* Audia will clamp volume to 0, 1 when using Audio to prevent errors
+* If WAI is supported, volume is as high (and grossly loud) as you want!
 
 ## Audio API
 

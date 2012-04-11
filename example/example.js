@@ -1,5 +1,7 @@
 //(function () {
 
+	/*
+  /////////////////////////////////////////////////////////////////////////////
 	// Setup audio context
 	var audioContext = new webkitAudioContext();
 
@@ -47,26 +49,36 @@
 		bufferSource.buffer = bufferCache;
 		bufferSource.connect(gainNode);
   }, false);
+  /////////////////////////////////////////////////////////////////////////////
+  */
 
-	/*
-	console.log('using ' + (Audia.hasWebAudio ? 'wai' : 'audio wrapper'));
+	console.log('Using ' + (Audia.hasWebAudio ? 'WAI' : 'audio wrapper'));
 
   // Attack sound…
 
-  var attackSound = new Audia();
-  attackSound.addEventListener("canplaythrough", function () {
-		playAttack.disabled = false;
-  });
-	attackSound.src = "audio/demoblin_attacks.mp3";
+	console.log("attackSound: loading…");
 
-  // Play
+  // Play button
   var playAttack = document.getElementById("play-attack");
+	playAttack.disabled = true;
   playAttack.addEventListener("click", function () {
 		// Passing in a number sets currentTime
 		// In this case it's a shortcut to ensuring the sound
 		// plays from the beginning
     attackSound.play(0);
   }, false);
+
+  var attackSound = new Audia();
+	attackSound.addEventListener("canplaythrough", function () {
+		console.log("attackSound: canplaythrough event!");
+		playAttack.disabled = false;
+	}, false);
+	attackSound.oncanplay = function () {
+		console.log("attackSound: oncanplay!", attackSound.seekable);
+		playAttack.disabled = false;
+	};
+
+	attackSound.src = "audio/demoblin_attacks.mp3";
 
   // Loop
   var loopAttack = document.getElementById("loop-attack");
@@ -82,10 +94,12 @@
 
   // Shop music…
 
-  var shopMusic = new Audia({
-    src: "audio/shop.mp3",
-    loop: true
-  });
+  var shopMusic = new Audia("audio/shop.mp3");
+  shopMusic.loop = true;
+
+	shopMusic.addEventListener("seeked", function () {
+		console.log('seeked!');
+	});
 
   // Play
   var playShop = document.getElementById("play-shop");
@@ -125,6 +139,5 @@
   muteShop.addEventListener("click", function () {
 		shopMusic.muted = muteShop.checked;
   }, false);
-  */
 
 //})();
