@@ -31,7 +31,7 @@ var Audia = (function () {
 
 	// Which approach are we taking?…
 
-	if (0/*hasWebAudio*/) {
+	if (hasWebAudio) {
 
 		// Reimplement Audio using Web Audio API…
 
@@ -79,27 +79,32 @@ var Audia = (function () {
 
 		// load
 		Audia.prototype.load = function (type) {
+			// TODO
 		};
 
 		// play()
 		Audia.prototype.play = function (currentTime) {
-			//this.refreshBufferSource();
+			// TODO
 		};
 
 		// pause()
 		Audia.prototype.pause = function () {
+			// TODO
 		};
 
 		// stop()
 		Audia.prototype.stop = function () {
+			// TODO
 		};
 
 		// addEventListener()
 		Audia.prototype.addEventListener = function (eventName, callback, capture) {
+			// TODO
 		};
 
 		// removeEventListener()
 		Audia.prototype.removeEventListener = function (eventName, callback, capture) {
+			// TODO
 		};
 
 		// Properties…
@@ -128,7 +133,7 @@ var Audia = (function () {
 			get: function () { return this._currentTime; },
 			set: function (value) {
 				this._currentTime = value;
-				// TODO: implement
+				// TODO
 				// TODO: throw errors appropriately (eg DOM error)
 			}
 		});
@@ -216,6 +221,13 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "volume", {
 			get: function () { return this._volume; },
 			set: function (value) {
+				// Emulate Audio by throwing an error if volume is out of bounds
+				if (!Audia.preventErrors) {
+					if (clamp(value, 0, 1) !== value) {
+						// TODO: throw DOM error
+					}
+				}
+
 				if (value < 0) { value = 0; }
 				this._volume = value;
 				// TODO
@@ -384,11 +396,16 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "volume", {
 			get: function () { return this._audioNode.volume; },
 			set: function (value) {
-				// Clamping prevents DOM error
-				this._audioNode.volume = clamp(value, 0, 1);
+				if (Audia.preventErrors) {
+					var value = clamp(value, 0, 1);
+				}
+				this._audioNode.volume = value;
 			}
 		});
 	}
+
+	// Prevent errors?
+	Audia.preventErrors = true;
 
 	// Public helper
 	Object.defineProperty(Audia, "hasWebAudio", {
@@ -398,6 +415,11 @@ var Audia = (function () {
 	// Audio context
 	Object.defineProperty(Audia, "audioContext", {
 		get: function () { return audioContext; }
+	});
+
+	// Gain node
+	Object.defineProperty(Audia, "gainNode", {
+		get: function () { return gainNode; }
 	});
 
 	// Version
@@ -449,6 +471,7 @@ var Audia = (function () {
 	for (var i = 0, j = eventNames.length; i < j; ++i) {
 		(function (eventName) {
 			var fauxPrivateName = "_on" + eventName;
+			Audia.prototype[fauxPrivateName] = null;
 			Object.defineProperty(Audia.prototype, "on" + eventName, {
 				get: function () { return this[fauxPrivateName]; },
 				set: function (value) {
@@ -462,7 +485,7 @@ var Audia = (function () {
 						this[fauxPrivateName] = value;
 						this.addEventListener(eventName, value, false);
 					} else {
-						delete this[fauxPrivateName];
+						this[fauxPrivateName] = null;
 					}
 				}
 			});

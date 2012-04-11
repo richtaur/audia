@@ -17,8 +17,18 @@
 
 ## DIFFERENCES
 
-* Audia will clamp volume to 0, 1 when using Audio to prevent errors
-* If WAI is supported, volume is as high (and grossly loud) as you want!
+* Audia.version
+* Audia.preventErrors
+	- Audia will clamp volume to 0, 1 when using Audio to prevent errors
+	- If WAI is supported, volume is as high (and grossly loud) as you want!
+* Audia.canPlayType helper
+* audia.audioContext
+* Audia.gainNode
+* Audia.hasWebAudio
+* audia._*
+* defaults for audia.on* is null; audia.* seems to be sometimes null, sometimes undefined
+* audia.canPlayType also supports shortcuts
+* 
 
 ## Audio API
 
