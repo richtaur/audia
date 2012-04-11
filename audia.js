@@ -280,8 +280,8 @@ console.log('setting buffer source');
 		// autoplay (Boolean)
 		Object.defineProperty(Audia.prototype, "autoplay", {
 			get: function () { return this._audioNode.autoplay; },
-			set: function (autoplay) {
-				this._audioNode.autoplay = autoplay;
+			set: function (value) {
+				this._audioNode.autoplay = value;
 			}
 		});
 
@@ -298,16 +298,16 @@ console.log('setting buffer source');
 		// currentTime (Number)
 		Object.defineProperty(Audia.prototype, "currentTime", {
 			get: function () { return this._audioNode.currentTime; },
-			set: function (currentTime) {
-				this._audioNode.currentTime = currentTime;
+			set: function (value) {
+				this._audioNode.currentTime = value;
 			}
 		});
 
 		// defaultPlaybackRate (Number) (default: 1)
 		Object.defineProperty(Audia.prototype, "defaultPlaybackRate", {
 			get: function () { return this._audioNode.defaultPlaybackRate; },
-			set: function (defaultPlaybackRate) {
-				this._audioNode.defaultPlaybackRate = defaultPlaybackRate;
+			set: function (value) {
+				this._audioNode.defaultPlaybackRate = value;
 			}
 		});
 
@@ -319,28 +319,28 @@ console.log('setting buffer source');
 		// loop (Boolean)
 		Object.defineProperty(Audia.prototype, "loop", {
 			get: function () { return this._audioNode.loop; },
-			set: function (loop) {
+			set: function (value) {
 				// Fixes a bug in Chrome where audio will not play if currentTime
 				// is at the end of the song
 				if (this._audioNode.currentTime >= this._audioNode.duration) {
 					this._audioNode.currentTime = 0;
 				}
 
-				this._audioNode.loop = loop;
+				this._audioNode.loop = value;
 			}
 		});
 
 		// muted (Boolean)
-		Audia.prototype.__defineGetter__("muted", function () {
-			return this._audioNode.muted;
-		});
-		Audia.prototype.__defineSetter__("muted", function (muted) {
-			return this._audioNode.muted = muted;
+		Object.defineProperty(Audia.prototype, "muted", {
+			get: function () { return this._audioNode.muted; },
+			set: function (value) {
+				this._audioNode.muted = value;
+			}
 		});
 
 		// paused (Boolean)
-		Audia.prototype.__defineGetter__("paused", function () {
-			return this._audioNode.paused;
+		Object.defineProperty(Audia.prototype, "paused", {
+			get: function () { return this._audioNode.paused; }
 		});
 
 		// playbackRate (Number) (default: 1)
@@ -375,11 +375,11 @@ console.log('setting buffer source');
 		});
 
 		// src (String)
-		Audia.prototype.__defineGetter__("src", function () {
-			return this._audioNode.src;
-		});
-		Audia.prototype.__defineSetter__("src", function (src) {
-			return this._audioNode.src = src;
+		Object.defineProperty(Audia.prototype, "src", {
+			get: function () { return this._audioNode.src; },
+			set: function (value) {
+				this._audioNode.src = value;
+			}
 		});
 
 		// volume (Number) (range: 0-1) (default: 1)
