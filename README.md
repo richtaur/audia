@@ -1,7 +1,5 @@
 # Audia
 
-TODO: preload (default="auto")?
-
 Audia reimplements and extends the [HTML5 Audio][1] object using the [Web Audio API][2].
 
 ## Benefits
@@ -19,7 +17,9 @@ A complete write-up on this project can be found on the [Lost Decade Games blog]
 
 ## API Documentation
 
-Everything is identical to the HTML5 Audio spec. Anything not right? File an issue! :)
+Everything is identical to the HTML5 Audio spec. Anything not working as it should? File an issue! :)
+
+In fact in many cases Audia is BETTER than the browser's native Audio implementation, even if it doesn't also support Web Audio API.
 
 ### Global Audia object
 
@@ -28,6 +28,10 @@ TODO: Provide thin wrappers around the base code.
 
 * **version**: `String` The version of Audia being run. (Example: `"0.1.0"`)
 * **canPlayType**: you can pass in mp3, ogg (helpers since normally it wants audio/ogg audio/mp3)
+
+## Gimme some sugar baby
+
+Audia also has the below API. If any of the below functionality is not supported by the client, Audia will fail silently.
 
 ### Audia instances
 
