@@ -44,6 +44,10 @@ var Audia = (function () {
 		Audia = function (src) {
 			this.id = addAudiaObject(this);
 
+			// Setup
+			this._listenerId = 0;
+			this._listeners = {};
+
 			// Audio properties
 			this._autoplay = false;
 			this._buffered = []; // TimeRanges
@@ -89,22 +93,54 @@ var Audia = (function () {
 
 		// pause()
 		Audia.prototype.pause = function () {
+			if (this._paused) { return; }
 			// TODO
+			//this._
+			this.currentTime = 0;
 		};
 
 		// stop()
 		Audia.prototype.stop = function () {
+			if (this._paused) { return; }
 			// TODO
 		};
 
 		// addEventListener()
-		Audia.prototype.addEventListener = function (eventName, callback, capture) {
-			// TODO
+		Audia.prototype.addEventListener = function (eventName, callback/*, capture*/) {
+			this._listeners[++this._listenerKey] = {
+				eventName: eventName,
+				callback: callback
+			};
+		};
+
+		// dispatchEvent()
+		Audia.prototype.dispatchEvent = function (eventName, args) {
+			for (var id in this._listeners) {
+				var listener = this._listeners[id];
+				if (listener.eventName == eventName) {
+					listener.callback && listener.callback.apply(callback, args);
+				}
+			}
 		};
 
 		// removeEventListener()
-		Audia.prototype.removeEventListener = function (eventName, callback, capture) {
-			// TODO
+		Audia.prototype.removeEventListener = function (eventName, callback/*, capture*/) {
+			// Get the id of the listener to remove
+			var listenerId = null;
+			for (var id in this._listeners) {
+				var listener = this._listeners[id];
+				if (listener.eventName === eventName) {
+					if (listener.callback === callback) {
+						listenerId = id;
+						break;
+					}
+				}
+			}
+
+			// Delete the listener
+			if (listenerId !== null) {
+				delete this._listeners[listenerId];
+			}
 		};
 
 		// Properties…
@@ -402,6 +438,7 @@ var Audia = (function () {
 				this._audioNode.volume = value;
 			}
 		});
+
 	}
 
 	// Prevent errors?
