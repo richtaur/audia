@@ -1,11 +1,6 @@
-// To be used as intended, Audia should be in the same scope as Audio
+// Audia: <audio> implemented using the Web Audio API
+// by Matt Hackett of Lost Decade Games
 var Audia = (function () {
-
-	// Setup
-	var Audia;
-	var buffersCache = {};
-	var audioId = 0;
-	var audiaObjectsCache = {};
 
 	// Got Web Audio API?
 	var audioContext = null;
@@ -15,8 +10,13 @@ var Audia = (function () {
 		audioContext = new webkitAudioContext();
 	}
 
-	// Setup some helpers
+	// Setup
+	var Audia;
 	var hasWebAudio = Boolean(audioContext);
+
+	// Audia object creation
+	var audioId = 0;
+	var audiaObjectsCache = {};
 	var addAudiaObject = function (object) {
 		var id = ++audioId;
 		audiaObjectsCache[id] = object;
@@ -24,102 +24,113 @@ var Audia = (function () {
 		return id;
 	};
 
+	// Which approach are we taking?…
+
 	if (hasWebAudio) {
 
 		// Reimplement Audio using Web Audio API…
 
+		// Setup a global gain node
+		var gainNode = audioContext.createGainNode();
+		gainNode.gain.value = 1;
+		gainNode.connect(audioContext.destination);
+
 		// Constructor
 		Audia = function (src) {
 			this.id = addAudiaObject(this);
-			this._audioNode = new Audio();
 
-			if (typeof src == "object") {
-				for (var key in src) {
-					this[key] = src[key];
-				}
-			} else if (typeof src == "string") {
-				this._audioNode.src = src;
+			// Audio properties
+			this._autoplay = false;
+			this._buffered = []; // TimeRanges
+			this._currentSrc = "";
+			this._currentTime = 0;
+			this._defaultPlaybackRate = 1;
+			this._duration = NaN;
+			this._loop = false;
+			this._muted = false;
+			this._paused = true;
+			this._playbackRate = 1;
+			this._played = []; // TimeRanges
+			this._preload = "auto";
+			this._seekable = []; // TimeRanges
+			this._seeking = false;
+			this._src = "";
+			this._volume = 1;
+
+			// Support for new Audia(src)
+			if (src !== undefined) {
+				this.src = src;
 			}
 		};
 
 		// Methods…
 
-		// canPlayType
-		Audia.prototype.canPlayType = function (type) {
-			return Audia.canPlayType(type);
-		};
-
 		// load
 		Audia.prototype.load = function (type) {
-			this._audioNode.load();
 		};
 
 		// play()
 		Audia.prototype.play = function (currentTime) {
-			if (currentTime !== undefined) {
-				this._audioNode.currentTime = currentTime;
-			}
-			this._audioNode.play();
+			//this.refreshBufferSource();
 		};
 
 		// pause()
 		Audia.prototype.pause = function () {
-			this._audioNode.pause();
 		};
 
 		// stop()
 		Audia.prototype.stop = function () {
-			this._audioNode.pause();
-			this._audioNode.currentTime = 0;
 		};
 
 		// addEventListener()
 		Audia.prototype.addEventListener = function (eventName, callback, capture) {
-			this._audioNode.addEventListener(eventName, callback, capture);
 		};
 
 		// removeEventListener()
 		Audia.prototype.removeEventListener = function (eventName, callback, capture) {
-			this._audioNode.removeEventListener(eventName, callback, capture);
 		};
 
 		// Properties…
 
 		// autoplay (Boolean)
 		Object.defineProperty(Audia.prototype, "autoplay", {
-			get: function () { return this._audioNode.autoplay; },
+			get: function () { return this._autoplay; },
 			set: function (value) {
-				this._audioNode.autoplay = value;
+				this._autoplay = value;
+				// TODO
 			}
 		});
 
 		// buffered (TimeRanges)
 		Object.defineProperty(Audia.prototype, "buffered", {
-			get: function () { return this._audioNode.buffered; }
+			get: function () { return this._buffered; }
 		});
 
-		// currentSrc (String) (read-only)
+		// currentSrc (String)
 		Object.defineProperty(Audia.prototype, "currentSrc", {
-			get: function () { return this._audioNode.src; }
+			get: function () { return this._currentSrc; }
 		});
 
 		// currentTime (Number)
 		Object.defineProperty(Audia.prototype, "currentTime", {
-			get: function () { return this._audioNode.currentTime; },
+			get: function () { return this._currentTime; },
 			set: function (value) {
-				this._audioNode.currentTime = value;
+				this._currentTime = value;
+				// TODO: implement
+				// TODO: throw errors appropriately
 			}
 		});
 
 		// defaultPlaybackRate (Number) (default: 1)
 		Object.defineProperty(Audia.prototype, "defaultPlaybackRate", {
-			get: function () { return this._audioNode.defaultPlaybackRate; },
+			get: function () { return Number(this._defaultPlaybackRate); },
 			set: function (value) {
-				this._audioNode.defaultPlaybackRate = value;
+				this._defaultPlaybackRate = value;
+				// TODO
 			}
 		});
 
-		// duration (Number) (read-only)
+		// duration (Number)
 		Object.defineProperty(Audia.prototype, "duration", {
 			get: function () { return this._audioNode.duration; }
 		});
@@ -397,21 +408,13 @@ console.log('setting buffer source');
 			this.id = addAudiaObject(this);
 			this._audioNode = new Audio();
 
-			if (typeof src == "object") {
-				for (var key in src) {
-					this[key] = src[key];
-				}
-			} else if (typeof src == "string") {
-				this._audioNode.src = src;
+			// Support for new Audia(src)
+			if (src !== undefined) {
+				this.src = src;
 			}
 		};
 
 		// Methods…
-
-		// canPlayType
-		Audia.prototype.canPlayType = function (type) {
-			return Audia.canPlayType(type);
-		};
 
 		// load
 		Audia.prototype.load = function (type) {
@@ -462,7 +465,7 @@ console.log('setting buffer source');
 			get: function () { return this._audioNode.buffered; }
 		});
 
-		// currentSrc (String) (read-only)
+		// currentSrc (String)
 		Object.defineProperty(Audia.prototype, "currentSrc", {
 			get: function () { return this._audioNode.src; }
 		});
@@ -483,7 +486,7 @@ console.log('setting buffer source');
 			}
 		});
 
-		// duration (Number) (read-only)
+		// duration (Number)
 		Object.defineProperty(Audia.prototype, "duration", {
 			get: function () { return this._audioNode.duration; }
 		});
@@ -563,7 +566,7 @@ console.log('setting buffer source');
 		});
 	}
 
-	// Public helpers
+	// Public helper
 	Object.defineProperty(Audia, "hasWebAudio", {
 		get: function () { return hasWebAudio; }
 	});
@@ -588,6 +591,53 @@ console.log('setting buffer source');
 		var type = (type.match("/") === null ? "audio/" : "") + type;
 		return audioNode.canPlayType(type);
 	};
+
+	// canPlayType
+	Audia.prototype.canPlayType = function (type) {
+		return Audia.canPlayType(type);
+	};
+
+	// Lastly, wrap all "on" properties up into the events
+	var eventNames = [
+		"abort",
+		"canplay",
+		"canplaythrough",
+		"durationchange",
+		"emptied",
+		"ended",
+		"error",
+		"loadeddata",
+		"loadedmetadata",
+		"loadstart",
+		"pause",
+		"play",
+		"playing",
+		"progress",
+		"ratechange",
+		"seeked",
+		"seeking",
+		"stalled",
+		"suspend",
+		"timeupdate",
+		"volumechange"
+	];
+
+	for (var i = 0, j = eventNames.length; i < j; ++i) {
+		(function (eventName) {
+			var fauxPrivateName = "_on" + eventName;
+			Audia.prototype[fauxPrivateName] = null;
+			Object.defineProperty(Audia.prototype, "on" + eventName, {
+				get: function () { return this[fauxPrivateName]; },
+				set: function (value) {
+					if (this[fauxPrivateName]) {
+						this.removeEventListener(eventName, this[fauxPrivateName], false);
+					}
+					this[fauxPrivateName] = value;
+					this.addEventListener(eventName, value, false);
+				}
+			});
+		})(eventNames[i]);
+	}
 
 	return Audia;
 

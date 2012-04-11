@@ -1,5 +1,13 @@
 # TODO
 
+* add/remove event
+* properties:
+	* onload
+	* oncanplay
+	* oncanplaythrough
+	* onended
+* ensure props are returning correct types (eg duration NaN)
+
 * Reimplement Audio in WAI
 * Clean up README.md:
 	* Ways Audio differentiates from the Audio API
