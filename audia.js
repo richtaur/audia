@@ -24,10 +24,182 @@ var Audia = (function () {
 		return id;
 	};
 
-hasWebAudio = false; // TODO
 	if (hasWebAudio) {
 
 		// Reimplement Audio using Web Audio API…
+
+		// Constructor
+		Audia = function (src) {
+			this.id = addAudiaObject(this);
+			this._audioNode = new Audio();
+
+			if (typeof src == "object") {
+				for (var key in src) {
+					this[key] = src[key];
+				}
+			} else if (typeof src == "string") {
+				this._audioNode.src = src;
+			}
+		};
+
+		// Methods…
+
+		// canPlayType
+		Audia.prototype.canPlayType = function (type) {
+			return Audia.canPlayType(type);
+		};
+
+		// load
+		Audia.prototype.load = function (type) {
+			this._audioNode.load();
+		};
+
+		// play()
+		Audia.prototype.play = function (currentTime) {
+			if (currentTime !== undefined) {
+				this._audioNode.currentTime = currentTime;
+			}
+			this._audioNode.play();
+		};
+
+		// pause()
+		Audia.prototype.pause = function () {
+			this._audioNode.pause();
+		};
+
+		// stop()
+		Audia.prototype.stop = function () {
+			this._audioNode.pause();
+			this._audioNode.currentTime = 0;
+		};
+
+		// addEventListener()
+		Audia.prototype.addEventListener = function (eventName, callback, capture) {
+			this._audioNode.addEventListener(eventName, callback, capture);
+		};
+
+		// removeEventListener()
+		Audia.prototype.removeEventListener = function (eventName, callback, capture) {
+			this._audioNode.removeEventListener(eventName, callback, capture);
+		};
+
+		// Properties…
+
+		// autoplay (Boolean)
+		Object.defineProperty(Audia.prototype, "autoplay", {
+			get: function () { return this._audioNode.autoplay; },
+			set: function (value) {
+				this._audioNode.autoplay = value;
+			}
+		});
+
+		// buffered (TimeRanges)
+		Object.defineProperty(Audia.prototype, "buffered", {
+			get: function () { return this._audioNode.buffered; }
+		});
+
+		// currentSrc (String) (read-only)
+		Object.defineProperty(Audia.prototype, "currentSrc", {
+			get: function () { return this._audioNode.src; }
+		});
+
+		// currentTime (Number)
+		Object.defineProperty(Audia.prototype, "currentTime", {
+			get: function () { return this._audioNode.currentTime; },
+			set: function (value) {
+				this._audioNode.currentTime = value;
+			}
+		});
+
+		// defaultPlaybackRate (Number) (default: 1)
+		Object.defineProperty(Audia.prototype, "defaultPlaybackRate", {
+			get: function () { return this._audioNode.defaultPlaybackRate; },
+			set: function (value) {
+				this._audioNode.defaultPlaybackRate = value;
+			}
+		});
+
+		// duration (Number) (read-only)
+		Object.defineProperty(Audia.prototype, "duration", {
+			get: function () { return this._audioNode.duration; }
+		});
+
+		// loop (Boolean)
+		Object.defineProperty(Audia.prototype, "loop", {
+			get: function () { return this._audioNode.loop; },
+			set: function (value) {
+				// Fixes a bug in Chrome where audio will not play if currentTime
+				// is at the end of the song
+				if (this._audioNode.currentTime >= this._audioNode.duration) {
+					this._audioNode.currentTime = 0;
+				}
+
+				this._audioNode.loop = value;
+			}
+		});
+
+		// muted (Boolean)
+		Object.defineProperty(Audia.prototype, "muted", {
+			get: function () { return this._audioNode.muted; },
+			set: function (value) {
+				this._audioNode.muted = value;
+			}
+		});
+
+		// paused (Boolean)
+		Object.defineProperty(Audia.prototype, "paused", {
+			get: function () { return this._audioNode.paused; }
+		});
+
+		// playbackRate (Number) (default: 1)
+		Object.defineProperty(Audia.prototype, "playbackRate", {
+			get: function () { return this._audioNode.playbackRate; },
+			set: function (playbackRate) {
+				this._audioNode.playbackRate = playbackRate;
+			}
+		});
+
+		// played (Boolean)
+		Object.defineProperty(Audia.prototype, "played", {
+			get: function () { return this._audioNode.played; }
+		});
+
+		// preload (String)
+		Object.defineProperty(Audia.prototype, "preload", {
+			get: function () { return this._audioNode.preload; },
+			set: function (preload) {
+				this._audioNode.preload = preload;
+			}
+		});
+
+		// seekable (Boolean)
+		Object.defineProperty(Audia.prototype, "seekable", {
+			get: function () { return this._audioNode.seekable; }
+		});
+
+		// seeking (Boolean)
+		Object.defineProperty(Audia.prototype, "seeking", {
+			get: function () { return this._audioNode.seeking; }
+		});
+
+		// src (String)
+		Object.defineProperty(Audia.prototype, "src", {
+			get: function () { return this._audioNode.src; },
+			set: function (value) {
+				this._audioNode.src = value;
+			}
+		});
+
+		// volume (Number) (range: 0-1) (default: 1)
+		Object.defineProperty(Audia.prototype, "volume", {
+			get: function () { return this._audioNode.volume; },
+			set: function (volume) {
+				this._audioNode.volume = volume;
+			}
+		});
+
+////////////////////////////////////////////////////////////////////////////////////////
+
 		/*
 
 		var loadAudioFile = function (object, url) {

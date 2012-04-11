@@ -1,22 +1,28 @@
 //(function () {
 
-/*
+	// Setup audio context
 	var audioContext = new webkitAudioContext();
 
+	// Create a gain node
 	var gainNode = audioContext.createGainNode();
 	gainNode.gain.value = 1;
 	gainNode.connect(audioContext.destination);
 
+	// Create the buffer source
+	var bufferCache;
 	var bufferSource = audioContext.createBufferSource();
 	bufferSource.connect(gainNode);
-	var bufferCache = {};
 
+	// Fetch the audio data
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "audio/shop.mp3", true);
 	xhr.responseType = "arraybuffer";
 	xhr.onload = function () {
+		// Decode the response
 		audioContext.decodeAudioData(xhr.response, function (buffer) {
+			// Cache the buffer
 			bufferCache = buffer;
+
 			// Attach buffer to source
 			bufferSource.buffer = buffer;
 
@@ -29,7 +35,6 @@
   // Play
   var playShop = document.getElementById("play-shop");
   playShop.addEventListener("click", function () {
-
 		bufferSource.noteOn(0);
   }, false);
 
@@ -43,9 +48,7 @@
 		bufferSource.connect(gainNode);
   }, false);
 
-	return;
-	*/
-
+	/*
 	console.log('using ' + (Audia.hasWebAudio ? 'wai' : 'audio wrapper'));
 
   // Attack sound…
@@ -122,5 +125,6 @@
   muteShop.addEventListener("click", function () {
 		shopMusic.muted = muteShop.checked;
   }, false);
+  */
 
 //})();

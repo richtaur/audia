@@ -1,18 +1,16 @@
 # TODO
 
-* Convert __define__ to Object.define
-* Completely grok WAI
 * Reimplement Audio in WAI
-* Clean up README.md
-
-* Ways Audio differentiates from the Audio API
-	-or- (combine?)
-* New features:
-	- repeating via start/end points
-	- Audia.volume (global)
-	- Audia.muted (global)
-	- panning (2d/3d)
-	- sound sprites (?)
+* Clean up README.md:
+	* Ways Audio differentiates from the Audio API
+		-or- (combine?)
+	* New features:
+		- repeating via start/end points
+		- Audia.volume (global)
+		- Audia.muted (global)
+		- panning (2d/3d)
+		- sound sprites (?)
+* Make a more compelling example
 
 ## Audio API
 
@@ -29,7 +27,7 @@
 + Property "buffered"
 + Event "volumechange"
 + Event "timeupdate"
-+ Event "suspend"
+- Event "suspend"
 + Event "stalled"
 + Event "seeking"
 + Event "seeked"
@@ -55,8 +53,8 @@
 + Follows 30x responses on src (cross domain ssl redirection)
 + Consistent time between play() and actual playback (&lt; 20ms)
 + Multiple Audio objects playing at the same time
-- Seeking to unbuffered position with continuous playback after seeking
 + Supports WAV format
 + Supports Ogg format
 + Supports MP3 format
 + Supports AAC format
+- Seeking to unbuffered position with continuous playback after seeking
