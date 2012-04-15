@@ -1,5 +1,7 @@
-// Audia: <audio> implemented using the Web Audio API
-// by Matt Hackett of Lost Decade Games
+/*
+Audia: <audio> implemented using the Web Audio API
+by Matt Hackett of Lost Decade Games
+*/
 var Audia = (function () {
 
 	// Got Web Audio API?
@@ -34,6 +36,54 @@ var Audia = (function () {
 	if (hasWebAudio) {
 
 		// Reimplement Audio using Web Audio API…
+
+		// Load audio helper
+		var buffersCache = {};
+		var loadAudioFile = function (object, url) {
+			var onLoad = function (buffer) {
+				// Duration
+				if (buffer.duration !== object._duration) {
+					object._duration = buffer.duration;
+					object.dispatchEvent("durationchange"/*, TODO*/);
+				}
+
+				object.dispatchEvent("canplay"/*, TODO*/);
+				object.dispatchEvent("canplaythrough"/*, TODO*/);
+				object.dispatchEvent("load"/*, TODO*/);
+
+				object._autoplay && object.play();
+			};
+
+			// Got a cached buffer or should we fetch it?
+			if (url in buffersCache) {
+				onLoad(buffersCache[url]);
+			} else {
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", url, true);
+				xhr.responseType = "arraybuffer";
+				xhr.onload = function () {
+					audioContext.decodeAudioData(xhr.response, function (buffer) {
+						buffersCache[url] = buffer;
+						onLoad(buffer);
+					});
+				};
+				xhr.send();
+			}
+		};
+
+		var refreshBufferSource = function (object) {
+			// Create (or replace) buffer source
+			object.bufferSource = audioContext.createBufferSource();
+
+			// Attach buffer to buffer source
+			object.bufferSource.buffer = buffersCache[object.src];
+
+			// Connect to gain node
+			object.bufferSource.connect(object.gainNode);
+
+			// Update settings
+			object.bufferSource.loop = object._loop;
+		};
 
 		// Setup a master gain node
 		var gainNode = audioContext.createGainNode();
@@ -82,27 +132,35 @@ var Audia = (function () {
 		// Methods…
 
 		// load
-		Audia.prototype.load = function (type) {
-			// TODO
+		Audia.prototype.load = function () {
+			// TODO: find out what it takes for this to fire
+			// proably just needs src set right?
+			this._src && loadAudioFile(this, this._src);
 		};
 
 		// play()
-		Audia.prototype.play = function (currentTime) {
-			// TODO
+		Audia.prototype.play = function () {
+			// TODO: restart from this.currentTime
+			this._paused = false;
+
+			refreshBufferSource(this);
+			this.bufferSource.noteOn(0);
 		};
 
 		// pause()
 		Audia.prototype.pause = function () {
 			if (this._paused) { return; }
-			// TODO
-			//this._
-			this.currentTime = 0;
+			this._paused = true;
+
+			this.bufferSource.noteOff(0);
 		};
 
 		// stop()
 		Audia.prototype.stop = function () {
 			if (this._paused) { return; }
-			// TODO
+
+			this.pause();
+			this.currentTime = 0;
 		};
 
 		// addEventListener()
@@ -118,7 +176,7 @@ var Audia = (function () {
 			for (var id in this._listeners) {
 				var listener = this._listeners[id];
 				if (listener.eventName == eventName) {
-					listener.callback && listener.callback.apply(callback, args);
+					listener.callback && listener.callback.apply(listener.callback, args);
 				}
 			}
 		};
@@ -150,7 +208,6 @@ var Audia = (function () {
 			get: function () { return this._autoplay; },
 			set: function (value) {
 				this._autoplay = value;
-				// TODO
 			}
 		});
 
@@ -179,7 +236,7 @@ var Audia = (function () {
 			get: function () { return Number(this._defaultPlaybackRate); },
 			set: function (value) {
 				this._defaultPlaybackRate = value;
-				// TODO
+				// todo
 			}
 		});
 
@@ -192,8 +249,21 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "loop", {
 			get: function () { return this._loop; },
 			set: function (value) {
+				// TODO: buggy, needs revisit
+				if (this._loop === value) { return; }
 				this._loop = value;
-				// TODO
+
+				if (!this.bufferSource) { return; }
+
+				if (this._paused) {
+					refreshBufferSource(this);
+					this.bufferSource.loop = value;
+				} else {
+					this.pause();
+					refreshBufferSource(this);
+					this.bufferSource.loop = value;
+					this.play();
+				}
 			}
 		});
 
@@ -202,7 +272,7 @@ var Audia = (function () {
 			get: function () { return this._muted; },
 			set: function (value) {
 				this._muted = value;
-				// TODO
+				this.gainNode.gain.value = value ? 0 : this._volume;
 			}
 		});
 
@@ -216,7 +286,7 @@ var Audia = (function () {
 			get: function () { return this._playbackRate; },
 			set: function (value) {
 				this._playbackRate = value;
-				// TODO
+				// todo
 			}
 		});
 
@@ -249,7 +319,7 @@ var Audia = (function () {
 			get: function () { return this._src; },
 			set: function (value) {
 				this._src = value;
-				// TODO
+				loadAudioFile(this, value);
 			}
 		});
 
@@ -266,7 +336,13 @@ var Audia = (function () {
 
 				if (value < 0) { value = 0; }
 				this._volume = value;
-				// TODO
+
+				// Don't bother if we're muted!
+				if (this._muted) { return; }
+
+				this.gainNode.gain.value = value;
+
+				this.dispatchEvent("volumechange"/*, TODO*/);
 			}
 		});
 
@@ -353,6 +429,7 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "defaultPlaybackRate", {
 			get: function () { return this._audioNode.defaultPlaybackRate; },
 			set: function (value) {
+				// TODO: not being used ATM
 				this._audioNode.defaultPlaybackRate = value;
 			}
 		});

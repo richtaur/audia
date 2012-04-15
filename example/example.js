@@ -65,7 +65,7 @@
 		// Passing in a number sets currentTime
 		// In this case it's a shortcut to ensuring the sound
 		// plays from the beginning
-    attackSound.play(0);
+    attackSound.play();
   }, false);
 
   var attackSound = new Audia();
@@ -96,6 +96,7 @@
 
   var shopMusic = new Audia("audio/shop.mp3");
   shopMusic.loop = true;
+  shopMusic.autoplay = true;
 
 	shopMusic.addEventListener("seeked", function () {
 		console.log('seeked!');
