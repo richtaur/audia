@@ -287,9 +287,7 @@ var Audia = (function () {
 				if (this._paused) {
 					refreshBufferSource(this);
 				} else {
-					this.pause();
-					refreshBufferSource(this);
-					this.play();
+					this.bufferSource.loop = value;
 				}
 			}
 		});
@@ -395,8 +393,12 @@ var Audia = (function () {
 				if (!object.paused) {
 					if (object.currentTime >= object.duration) {
 						object.dispatchEvent("ended"/*, TODO*/);
-						object._startTime = audioContext.currentTime;
-						if (!object.loop) {
+
+						if (object.loop) {
+						console.log('yes loop');
+							object._startTime = audioContext.currentTime;
+						} else {
+						console.log('no loop');
 							object._paused = true;
 						}
 					}

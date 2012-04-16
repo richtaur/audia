@@ -120,6 +120,12 @@
     shopMusic.stop();
   }, false);
 
+  // Loop
+  var loopShop = document.getElementById("loop-shop");
+  loopShop.addEventListener("click", function () {
+    shopMusic.loop = loopShop.checked;
+  }, false);
+
   // Current time
   var currentTimeShop = document.getElementById("current-time-shop");
   setInterval(function () {
