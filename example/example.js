@@ -52,7 +52,7 @@
   /////////////////////////////////////////////////////////////////////////////
   */
 
-	console.log('Using ' + (Audia.hasWebAudio ? 'WAI' : 'audio wrapper'));
+	console.log('Using ' + (Audia.hasWebAudio ? 'WAA' : 'audio wrapper'));
 
   // Attack sound…
 

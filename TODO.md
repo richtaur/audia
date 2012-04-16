@@ -61,7 +61,7 @@
 * When falling back to `<audio>`, fixes a bug in Chrome where audio will not play if `currentTime` is at the end of the buffer
 * `Audia.version` displays the version of Audia being used (e.g., "0.3.0")
 * `Audia.preventErrors` prevents errors from being thrown as `Audio` would (e.g., `audio.volume` not within `0` to `1`) (default: `true`)
-* When WAI is supported, volume can be raised above `1`
+* When WAA is supported, volume can be raised above `1`
 * `Audia.audioContext` provides access to Audia's Web Audio API audio context
 * `Audia.gainNode` provides access to Audia's master gain node
 * `Audia.hasWebAudio` is a `Boolean` helper that lets you know if the client supports Web Audio API
