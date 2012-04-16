@@ -1,5 +1,5 @@
 /*
-Audia: <audio> implemented using the Web Audio API
+Audia: <audio> improved
 by Matt Hackett of Lost Decade Games
 */
 var Audia = (function () {
@@ -134,7 +134,7 @@ var Audia = (function () {
 
 		// load
 		Audia.prototype.load = function () {
-			// TODO: find out what it takes for this to fire
+			// todo: find out what it takes for this to fire
 			// proably just needs src set right?
 			this._src && loadAudioFile(this, this._src);
 		};
@@ -148,7 +148,7 @@ var Audia = (function () {
 			this._paused = false;
 			this._startTime = audioContext.currentTime;
 
-			var BUFFER = 0.01; // TODO: gross? hopefully a better way can be found
+			var BUFFER = 0.01; // TODO HACK: gross? hopefully a better way can be found
 			var grainDuration = (this._duration - this._currentTime - BUFFER);
 			this.bufferSource.noteGrainOn(0, this._currentTime, grainDuration);
 
@@ -254,11 +254,7 @@ var Audia = (function () {
 				}
 			},
 			set: function (value) {
-				// TODO: throw errors appropriately (eg DOM error)
-
-				//this._currentTime = value;
-
-				//var currentTime = clamp(currentTime, 0, this._duration);
+				// todo: throw errors appropriately (eg DOM error)
 
 				if (value != this.currentTime) {
 					var playing = !this._paused;
@@ -289,7 +285,7 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "loop", {
 			get: function () { return this._loop; },
 			set: function (value) {
-				// TODO: buggy, needs revisit
+				// TODO: buggy when sound is/isn't playing, needs revisit
 				if (this._loop === value) { return; }
 				this._loop = value;
 
@@ -370,7 +366,7 @@ var Audia = (function () {
 				// Emulate Audio by throwing an error if volume is out of bounds
 				if (!Audia.preventErrors) {
 					if (clamp(value, 0, 1) !== value) {
-						// TODO: throw DOM error
+						// todo: throw DOM error
 					}
 				}
 
@@ -382,7 +378,7 @@ var Audia = (function () {
 
 				this.gainNode.gain.value = value;
 
-				this.dispatchEvent("volumechange"/*, TODO*/);
+				this.dispatchEvent("volumechange"/*, TODO: arguments based on Audio spec */);
 			}
 		});
 
@@ -469,7 +465,7 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "defaultPlaybackRate", {
 			get: function () { return this._audioNode.defaultPlaybackRate; },
 			set: function (value) {
-				// TODO: not being used ATM
+				// todo: not being used ATM
 				this._audioNode.defaultPlaybackRate = value;
 			}
 		});
