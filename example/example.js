@@ -96,7 +96,7 @@
 
   var shopMusic = new Audia("audio/shop.mp3");
   shopMusic.loop = true;
-  shopMusic.autoplay = true;
+  //shopMusic.autoplay = true;
 
 	shopMusic.addEventListener("seeked", function () {
 		console.log('seeked!');
@@ -122,7 +122,7 @@
 
   // Current time
   var currentTimeShop = document.getElementById("current-time-shop");
-  var currentTimeInterval = setInterval(function () {
+  setInterval(function () {
     currentTimeShop.innerHTML = Math.round(shopMusic.currentTime) + "/" + Math.floor(shopMusic.duration);
   }, 50);
   document.getElementById("set-current-time-shop").addEventListener("click", function () {

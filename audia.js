@@ -97,6 +97,7 @@ var Audia = (function () {
 			// Setup
 			this._listenerId = 0;
 			this._listeners = {};
+			this._startTime = 0;
 
 			// Audio properties
 			this._autoplay = false;
@@ -140,11 +141,28 @@ var Audia = (function () {
 
 		// play()
 		Audia.prototype.play = function () {
-			// TODO: restart from this.currentTime
-			this._paused = false;
+			if (!this._paused) { return; }
 
 			refreshBufferSource(this);
-			this.bufferSource.noteOn(0);
+
+			this._paused = false;
+			this._startTime = audioContext.currentTime;
+
+			var BUFFER = 0.01; // TODO: gross? hopefully a better way can be found
+			var grainDuration = (this._duration - this._currentTime - BUFFER);
+			this.bufferSource.noteGrainOn(0, this._currentTime, grainDuration);
+
+			/*
+			var sound = this;
+			this._onendedTimeout = setTimeout(function () {
+				sound.onended();
+				sound._stop();
+				sound.currentTime = 0;
+				if (sound.loop) {
+					sound.play();
+				}
+			}, grainDuration * 1000);
+			*/
 		};
 
 		// pause()
@@ -223,11 +241,33 @@ var Audia = (function () {
 
 		// currentTime (Number)
 		Object.defineProperty(Audia.prototype, "currentTime", {
-			get: function () { return this._currentTime; },
+			get: function () {
+				if (this._paused) {
+					return this._currentTime;
+				} else {
+					var time = (audioContext.currentTime - this._startTime) + this._currentTime;
+					if (time > this._duration) {
+						return this._duration;
+					} else {
+						return time;
+					}
+				}
+			},
 			set: function (value) {
-				this._currentTime = value;
-				// TODO
 				// TODO: throw errors appropriately (eg DOM error)
+
+				//this._currentTime = value;
+
+				//var currentTime = clamp(currentTime, 0, this._duration);
+
+				if (value != this.currentTime) {
+					var playing = !this._paused;
+					this.stop();
+					this._currentTime = value;
+					if (playing) {
+						this.play();
+					}
+				}
 			}
 		});
 
@@ -538,7 +578,7 @@ var Audia = (function () {
 
 	// Version
 	Object.defineProperty(Audia, "version", {
-		get: function () { return "0.3.0"; }
+		get: function () { return "0.2.0"; }
 	});
 
 	// canPlayType helper

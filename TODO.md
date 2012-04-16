@@ -11,8 +11,8 @@
 
 + Property "volume"
 + Property "muted"
-- Property "duration"
-- Property "currentTime"
++ Property "duration"
++ Property "currentTime"
 - Property "seeking"
 - Property "seekable"
 - Property "played"
