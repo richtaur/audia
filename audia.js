@@ -15,13 +15,14 @@ var Audia = (function () {
 	// Setup
 	var Audia;
 	var hasWebAudio = Boolean(audioContext);
+	//var tick = null;
 
 	// Audia object creation
 	var audioId = 0;
-	var audiaObjectsCache = {};
-	var addAudiaObject = function (object) {
+	var objectsCache = {};
+	var addObject = function (object) {
 		var id = ++audioId;
-		audiaObjectsCache[id] = object;
+		objectsCache[id] = object;
 
 		return id;
 	};
@@ -92,7 +93,7 @@ var Audia = (function () {
 
 		// Constructor
 		Audia = function (src) {
-			this.id = addAudiaObject(this);
+			this.id = addObject(this);
 
 			// Setup
 			this._listenerId = 0;
@@ -148,21 +149,9 @@ var Audia = (function () {
 			this._paused = false;
 			this._startTime = audioContext.currentTime;
 
-			var BUFFER = 0.01; // TODO HACK: gross? hopefully a better way can be found
-			var grainDuration = (this._duration - this._currentTime - BUFFER);
+			// Play the buffer source
+			var grainDuration = (this._duration - this._currentTime);
 			this.bufferSource.noteGrainOn(0, this._currentTime, grainDuration);
-
-			/*
-			var sound = this;
-			this._onendedTimeout = setTimeout(function () {
-				sound.onended();
-				sound._stop();
-				sound.currentTime = 0;
-				if (sound.loop) {
-					sound.play();
-				}
-			}, grainDuration * 1000);
-			*/
 		};
 
 		// pause()
@@ -191,6 +180,7 @@ var Audia = (function () {
 
 		// dispatchEvent()
 		Audia.prototype.dispatchEvent = function (eventName, args) {
+			console.log('dispatchEvent', eventName, args);
 			for (var id in this._listeners) {
 				var listener = this._listeners[id];
 				if (listener.eventName == eventName) {
@@ -246,11 +236,14 @@ var Audia = (function () {
 					return this._currentTime;
 				} else {
 					var time = (audioContext.currentTime - this._startTime) + this._currentTime;
+					return time;
+					/*
 					if (time > this._duration) {
 						return this._duration;
 					} else {
 						return time;
 					}
+					*/
 				}
 			},
 			set: function (value) {
@@ -285,19 +278,17 @@ var Audia = (function () {
 		Object.defineProperty(Audia.prototype, "loop", {
 			get: function () { return this._loop; },
 			set: function (value) {
-				// TODO: buggy when sound is/isn't playing, needs revisit
 				if (this._loop === value) { return; }
+
 				this._loop = value;
 
 				if (!this.bufferSource) { return; }
 
 				if (this._paused) {
 					refreshBufferSource(this);
-					this.bufferSource.loop = value;
 				} else {
 					this.pause();
 					refreshBufferSource(this);
-					this.bufferSource.loop = value;
 					this.play();
 				}
 			}
@@ -382,16 +373,49 @@ var Audia = (function () {
 			}
 		});
 
+		// requestAnimationFrame shim
+		if (typeof requestAnimationFrame == "undefined") {
+			var requestAnimationFrame = (
+				window.mozRequestAnimationFrame ||
+				window.msRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				function (callback) {
+					setTimeout(function () {
+						callback(Date.now());
+					}, 17); // ~60 FPS
+				}
+			);
+		}
+
+		// Check each object every tick
+		requestAnimationFrame(function () {
+			for (var id in objectsCache) {
+				var object = objectsCache[id];
+				if (!object.paused) {
+					if (object.currentTime >= object.duration) {
+						object.dispatchEvent("ended"/*, TODO*/);
+						object._startTime = audioContext.currentTime;
+						if (!object.loop) {
+							object._paused = true;
+						}
+					}
+				}
+			}
+
+			requestAnimationFrame(arguments.callee);
+		});
+
 	} else {
 
 		// Create a thin wrapper around the Audio object…
 
 		// Constructor
 		Audia = function (src) {
-			this.id = addAudiaObject(this);
+			this.id = addObject(this);
 			this._audioNode = new Audio();
 
-			// Support for new Audia(src)
+			// Support for: new Audia(src)
 			if (src !== undefined) {
 				this.src = src;
 			}
@@ -571,6 +595,14 @@ var Audia = (function () {
 	Object.defineProperty(Audia, "gainNode", {
 		get: function () { return gainNode; }
 	});
+
+	/*
+	// Tick
+	Object.defineProperty(Audia, "tick", {
+		get: function () { return tick; },
+		set: function (value) { tick = value; }
+	});
+	*/
 
 	// Version
 	Object.defineProperty(Audia, "version", {

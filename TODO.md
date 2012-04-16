@@ -17,7 +17,7 @@
 - Property "seekable"
 - Property "played"
 - Property "playbackRate"
-- Property "paused"
++ Property "paused"
 - Property "defaultPlaybackRate"
 - Property "buffered"
 

@@ -94,7 +94,7 @@
 
   // Shop music…
 
-  var shopMusic = new Audia("audio/shop.mp3");
+  var shopMusic = new Audia("audio/win.mp3");
   shopMusic.loop = true;
   //shopMusic.autoplay = true;
 
