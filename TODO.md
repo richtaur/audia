@@ -7,6 +7,15 @@
 * Clean up README.md, delete this file
 * Make a more compelling example
 
+function arbitraryCrossfade( track1, track2 ) {
+  track1.gain.linearRampToValueAtTime( 0, 1 );
+  track2.gain.linearRampToValueAtTime( 1, 1 );
+}
+
+AudioManager.prototype.pauseEffects = function() {
+  this.nodes.effectsGain.disconnect();
+}
+
 ## Audio API
 
 + Property "volume"
