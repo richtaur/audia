@@ -50,6 +50,7 @@ Each Audia instance has the following properties:
 * **volume**: `Number` The volume of the playback where `0` is muted and `1` is normal volume. (arbitrary maximum = `10`), (default: `1`)
 * **onended**: `Function` Gets called when playback reaches the end of the buffer.
 * **onload**: `Function` Gets called when a sound file (requested by setting `src`) is done loading.
+* **timeUpdateInterval**: `Number` milliseconds how often HTML5 Audio *timeupdate* event is fired. Set 0 to ignore. Cannot be changed during playback.
 
 _* The italicized properties are only available if the client supports Web Audio API (otherwise they fail silently)._
 
