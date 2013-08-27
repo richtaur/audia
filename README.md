@@ -13,7 +13,7 @@ Audia reimplements and extends the [HTML5 Audio][1] object using the [Web Audio 
 * this is future-proof. you get Audio which is the best you can get for now, then later down the road you get web audio api
 * and seriously, you'll need a wrapper for WAI anyway
 
-A complete write-up on this project can be found on the [Lost Decade Games blog][2].
+A complete write-up on this project can be found on the [Lost Decade Games blog][3].
 
 ## API Documentation
 
